@@ -15,29 +15,28 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		var rf = Retrofit.Builder()
+		val retrofit = Retrofit.Builder()
 			.baseUrl(RetrofitInterface.BASE_URL)
-			.addConverterFactory(GsonConverterFactory.create()).build()
+			.addConverterFactory(GsonConverterFactory.create())
+			.build()
 
-		var API = rf.create(RetrofitInterface::class.java)
-		var call = API.posts
+		val api = retrofit.create(RetrofitInterface::class.java)
+		val call = api.getPosts()
 
-		call?.enqueue(object : Callback<List<PostModel?>?> {
-			override fun onFailure(call: Call<List<PostModel?>?>, t: Throwable) {
-
+		call.enqueue(object : Callback<CurrencyResponse> {
+			override fun onFailure(call: Call<CurrencyResponse>, t: Throwable) {
+				t.printStackTrace()
 			}
 
 			override fun onResponse(
-				call: Call<List<PostModel?>?>,
-				response: Response<List<PostModel?>?>
+				call: Call<CurrencyResponse>,
+				response: Response<CurrencyResponse>
 			) {
-				var postlist: List<PostModel>? = response.body() as List<PostModel>
-				var post = arrayOfNulls<String>(postlist!!.size)
+				val currencyResponse = response.body() as CurrencyResponse
+				val currencies = currencyResponse.valute.values
+				val currencyNames = currencies.map { it.name }
 
-				for(i in postlist!!.indices)
-					post[i] = postlist!![i]!!.currentValue
-
-				var adapter = ArrayAdapter<String>(applicationContext, android.R.layout.simple_dropdown_item_1line,post)
+				val adapter = ArrayAdapter<String>(applicationContext, android.R.layout.simple_dropdown_item_1line, currencyNames)
 				list_view.adapter = adapter
 			}
 		})

@@ -5,8 +5,8 @@ import retrofit2.http.GET
 
 interface RetrofitInterface {
 
-    @get:GET("daily_json.js")
-    val posts : Call<List<PostModel?>?>?
+    @GET("daily_json.js")
+    fun getPosts() : Call<CurrencyResponse>
 
     companion object {
         const val BASE_URL = "https://www.cbr-xml-daily.ru/"
