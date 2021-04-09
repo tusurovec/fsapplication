@@ -15,30 +15,12 @@ class MainActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
 
-		val retrofit = Retrofit.Builder()
-			.baseUrl(RetrofitInterface.BASE_URL)
-			.addConverterFactory(GsonConverterFactory.create())
-			.build()
+		val repository = CurrencyRepository()
+		repository.getCurrencies { currencies ->
+			val currencyNames = currencies.map { it.name }
 
-		val api = retrofit.create(RetrofitInterface::class.java)
-		val call = api.getPosts()
-
-		call.enqueue(object : Callback<CurrencyResponse> {
-			override fun onFailure(call: Call<CurrencyResponse>, t: Throwable) {
-				t.printStackTrace()
-			}
-
-			override fun onResponse(
-				call: Call<CurrencyResponse>,
-				response: Response<CurrencyResponse>
-			) {
-				val currencyResponse = response.body() as CurrencyResponse
-				val currencies = currencyResponse.valute.values
-				val currencyNames = currencies.map { it.name }
-
-				val adapter = ArrayAdapter<String>(applicationContext, android.R.layout.simple_dropdown_item_1line, currencyNames)
-				list_view.adapter = adapter
-			}
-		})
+			val adapter = ArrayAdapter<String>(applicationContext, android.R.layout.simple_dropdown_item_1line, currencyNames)
+			list_view.adapter = adapter
+		}
 	}
 }
